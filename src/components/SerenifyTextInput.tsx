@@ -7,8 +7,6 @@ import COLORS, { TEXT_COLOR } from '../utils/COLORS';
 interface SerenifyTextInputProps extends TextInputProps {
   value: string;
 }
-
-
 const SerenifyTextInput: React.FC<SerenifyTextInputProps> = ({ value, ...restProps }) => {
   return (
     <View style={styles.container}>

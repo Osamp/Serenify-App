@@ -1,41 +1,32 @@
-import { Image, StyleSheet,View, Text, } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AuthStack from '@/src/navigation/AuthStack';
+import AppStack from '@/src/navigation/AppStack';
+import useIsLoggedIn from '@/src/hooks/useIsLoggedIn';
 
-const {Navigator, Screen} = createNativeStackNavigator();
+const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const isLoggedIn = useIsLoggedIn();
+
   return (
-    <NavigationContainer independent={true}>
-       <StatusBar style="auto" />
-    <Navigator>
-      <Screen 
-        options={{
-           headerShown: false,
-        }}
-        name="AuthStack" 
-        component={AuthStack}
-         />
-        {/* <Screen name="MainStack" component={AppStack} /> */}
-      </Navigator>  
+    <NavigationContainer  independent={true}>
+      <Stack.Navigator>
+        {isLoggedIn ? (
+          <Stack.Screen
+            name="AppStack"
+            component={AppStack}
+            options={{ headerShown: false }} // Hide header if necessary
+          />
+        ) : (
+          <Stack.Screen
+            name="AuthStack"
+            component={AuthStack}
+            options={{ headerShown: false }} // Hide header if necessary
+          />
+        )}
+      </Stack.Navigator>
     </NavigationContainer>
-      
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex:1,
-    alignItems: 'center',
-    justifyContent:'center',
-    backgroundColor: '#95d3d2',
-  },
-   headerText:{
-    fontSize: 50,
-    color: '#756c6c',
-    fontWeight: 'bold',
-   }
-  
-});

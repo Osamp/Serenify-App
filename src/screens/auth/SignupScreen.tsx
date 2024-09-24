@@ -7,67 +7,75 @@ import SerenifyText from '@/src/components/SerenifyText';
 import SerenifyTextInput from '@/src/components/SerenifyTextInput';
 import SerenifyButton from '@/src/components/SerenifyButton';
 import { NavigationProp } from '@react-navigation/native';
+import useAuthentication from '@/src/hooks/useAuthentication';
 
 interface SignupScreenProps {
     navigation: NavigationProp<any>;
 }
 
-const SignupScreen = ({navigation}: SignupScreenProps) => {
-     
-    const[credentials, setCredentials]=React.useState({
+// Define the keys as a union type
+type CredentialKeys = 'email' | 'password';
+
+const SignupScreen = ({ navigation }: SignupScreenProps) => {
+    const [credentials, setCredentials] = React.useState<{
+        email: string;
+        password: string;
+    }>({
         email: '',
         password: '',
-    })
+    });
 
-     console.log('credentials', credentials);
-  return (
-    <BackgroundScreenWrapper image={backgroundImage}>
-        <View style={styles.container}>
-          <View style={styles.inputsWrapper}> 
-              <Image source={backgroundLogo} style={styles.logo} />
-              <SerenifyText heading bold>Serenify</SerenifyText>
-              <SerenifyText>
-                find a moment of Peace
-              </SerenifyText>
-              <View style={styles.inputWrapper}>
-            {Object.keys(credentials).map((key: string) => (
-              <SerenifyTextInput
-                key={key}
-                placeholder={key === 'email' ? 'Email' : 'Password'}
-                onChangeText={(text) =>
-                  setCredentials((prevState) => ({
-                    ...prevState,
-                    [key]: text,
-                  }))
-                }
-              />
-            ))}
-          </View>
-          <View style={{marginTop:15}}>
-            <SerenifyButton>
-                Signup
-            </SerenifyButton>
-        </View>
-        <View style={{marginTop:2}}>
-         <TouchableOpacity
-            onPress={() => {
-                 navigation.navigate('Login')
-            }}
-            >
-         <SerenifyText>Have an account? Login</SerenifyText>
-         </TouchableOpacity>
-         </View> 
-        </View>
-      </View>
-    </BackgroundScreenWrapper>
-  );
+    const { register } = useAuthentication();
+
+    // console.log('credentials', credentials);
+
+    return (
+        <BackgroundScreenWrapper image={backgroundImage}>
+            <View style={styles.container}>
+                <View style={styles.inputsWrapper}>
+                    <Image source={backgroundLogo} style={styles.logo} />
+                    <SerenifyText heading bold>Serenify</SerenifyText>
+                    <SerenifyText>Find a moment of Peace</SerenifyText>
+                    <View style={styles.inputWrapper}>
+                        {(['email', 'password'] as CredentialKeys[]).map((key) => (
+                            <SerenifyTextInput
+                                key={key}
+                                placeholder={key === 'email' ? 'Email' : 'Password'}
+                                secureTextEntry={key === 'password'} // Hide password input
+                                value={credentials[key]} // Access the value correctly
+                                onChangeText={(text) => setCredentials((prevState) => ({
+                                    ...prevState,
+                                    [key]: text,
+                                }))}
+                            />
+                        ))}
+                    </View>
+                    <View style={{ marginTop: 15 }}>
+                        <SerenifyButton
+                            onPress={() => register(credentials.email, credentials.password)}
+                        >
+                            Signup
+                        </SerenifyButton>
+                    </View>
+                    <View style={{ marginTop: 2 }}>
+                        <TouchableOpacity
+                            onPress={() => {
+                                navigation.navigate('Login');
+                            }}
+                        >
+                            <SerenifyText>Have an account? Login</SerenifyText>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </View>
+        </BackgroundScreenWrapper>
+    );
 };
-
 
 export default SignupScreen;
 
 const styles = StyleSheet.create({
-  container: {
+    container: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
@@ -75,23 +83,20 @@ const styles = StyleSheet.create({
     textTitle: {
         fontSize: 24,
         color: '#fff',
-        fontWeight:'bold'
+        fontWeight: 'bold',
     },
-    inputsWrapper:{
+    inputsWrapper: {
         width: '100%',
         justifyContent: 'center',
-        alignItems:'center',
+        alignItems: 'center',
         marginBottom: 50,
     },
-    logo:{
+    logo: {
         width: 100,
         height: 100,
-        marginBottom:10
+        marginBottom: 10,
     },
-     inputWrapper:{
-        marginTop:15,
-       
-     }
-
-
+    inputWrapper: {
+        marginTop: 15,
+    },
 });
